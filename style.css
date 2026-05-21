@@ -270,3 +270,54 @@ button:hover {
 #close-btn:hover {
     background-color: #f3f4f6;
 }
+
+/* Responsive Mobile Layout */
+@media (max-width: 600px) {
+    .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 15px;
+    }
+    #login-btn {
+        position: static;
+        margin-bottom: 15px;
+        width: 100%;
+        max-width: 200px;
+    }
+    .header h3 {
+        font-size: 24px;
+    }
+    .suggestions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    #gen, #pdf-upload {
+        width: 100%;
+    }
+    #pdf-upload {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        padding: 12px;
+    }
+    #pdf-upload::file-selector-button {
+        margin-right: 0;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    .name-surname-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .sub-close {
+        flex-direction: column;
+    }
+    #modal {
+        padding: 20px;
+        width: 90%;
+    }
+    #score-para {
+        font-size: 20px;
+    }
+}
