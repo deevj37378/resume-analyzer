@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js" integrity="sha512-Z8CqofpIcnJN80feS2uccz+pXWgZzeKxDsDNMD/dJ6997/LSRY+W4NmEt9acwR+Gt9OHN0kkI1CTianCwoqcjQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div class="header">
+        <button id="login-btn" type="submit">Login</button>
+        
+        <h3>AI Resume Analyzer</h3>
+        <br>
+        <p>Get AI suggestions for your resume in seconds!</p>
+        
+    </div>
+    <div class="BODY">
+        <textarea id="resume" placeholder="Enter resume text"></textarea>
+        
+    </div>
+    <div class="suggestions">
+        <button id="gen">Get AI suggestions</button>
+        <input type="file" id="pdf-upload" accept=".pdf">
+    </div>
+    <div class="ai">
+        <p id="ai-gen"></p>
+    </div>
+    <div class="score">
+        <button id="score-gen">Get Resume Score</button>
+        <p id="score-para"></p>
+    </div>
+    <div id="modal-overlay">
+    <div id="modal">
+        <h2>Login</h2>
+        <div class="name-surname-container">
+            <input type="text" id="name-input" placeholder="Enter your name">
+            <input type="text" id="surname-input" placeholder="Enter your surname">
+        </div>
+        <input type="email" id="email-input" placeholder="Enter your email">
+        <div class="sub-close">
+            <button id="submit-btn">Submit</button>
+        <button id="close-btn">Close</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
