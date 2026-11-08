@@ -8,14 +8,25 @@ const port = 3000;
 
 app.use(cors());
 app.use(express.json());
+// Serve only the frontend files (not _env, server.js, etc.)
+const path = require('path');
+for (const f of ['index.html', 'app.js', 'style.css']) {
+    app.get(f === 'index.html' ? ['/', '/index.html'] : `/${f}`, (req, res) => res.sendFile(path.join(__dirname, f)));
+}
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const supabase = (process.env.SUPABASE_URL && process.env.SUPABASE_KEY)
+    ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
+    : null;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
 
 app.post('/api/analyze', async (req, res) => {
     try {
         const { inputText } = req.body;
-        
+        if (!GROQ_API_KEY) {
+            return res.status(500).json({ error: "GROQ_API_KEY is not set in .env" });
+        }
+
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -23,8 +34,9 @@ app.post('/api/analyze', async (req, res) => {
                 "Authorization": `Bearer ${GROQ_API_KEY}`
             },
             body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                max_tokens: 1024,
+                model: GROQ_MODEL,
+                max_tokens: 4096,
+                reasoning_effort: "low",
                 messages: [
                     {
                         role: "user",
@@ -35,6 +47,9 @@ app.post('/api/analyze', async (req, res) => {
         });
 
         const data = await response.json();
+        if (!response.ok) {
+            return res.status(response.status).json({ error: data.error?.message || "Groq API request failed" });
+        }
         res.json(data);
     } catch (error) {
         console.error("Error in /api/analyze:", error);
@@ -45,7 +60,10 @@ app.post('/api/analyze', async (req, res) => {
 app.post('/api/score', async (req, res) => {
     try {
         const { inputText } = req.body;
-        
+        if (!GROQ_API_KEY) {
+            return res.status(500).json({ error: "GROQ_API_KEY is not set in .env" });
+        }
+
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -53,8 +71,9 @@ app.post('/api/score', async (req, res) => {
                 "Authorization": `Bearer ${GROQ_API_KEY}`
             },
             body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                max_tokens: 1024,
+                model: GROQ_MODEL,
+                max_tokens: 4096,
+                reasoning_effort: "low",
                 messages: [
                     {
                         role: "user",
@@ -65,6 +84,9 @@ app.post('/api/score', async (req, res) => {
         });
 
         const data = await response.json();
+        if (!response.ok) {
+            return res.status(response.status).json({ error: data.error?.message || "Groq API request failed" });
+        }
         res.json(data);
     } catch (error) {
         console.error("Error in /api/score:", error);
@@ -74,6 +96,9 @@ app.post('/api/score', async (req, res) => {
 
 app.post('/api/submit-user', async (req, res) => {
     try {
+        if (!supabase) {
+            return res.status(503).json({ error: "Supabase is not configured (set SUPABASE_URL and SUPABASE_KEY in .env)" });
+        }
         const { name, surname, email } = req.body;
         
         const { data, error } = await supabase

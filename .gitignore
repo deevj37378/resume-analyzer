@@ -1,2 +1,6 @@
+.vercel
+.env*
+_env
 node_modules/
-.env
+.DS_Store
+_gitignore.txt

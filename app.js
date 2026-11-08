@@ -16,10 +16,21 @@ const surnameInput = document.querySelector("#surname-input");
 // Using local backend for API calls securely
 
 input.addEventListener("input", () => {
-    if(!input.value.includes("EXPERIENCE") || !input.value.includes("SKILLS") || !input.value.includes("EDUCATION")){
-        let missPara = document.createElement("p");
-        missPara.innerText = "Please add mandatory fields like EXPERIENCE, EDUCATION & SKILLS in your resume.";
-        suggestions.appendChild(missPara);
+    const resumeText = input.value.toUpperCase();
+    const hasExperience = resumeText.includes("EXPERIENCE");
+    const hasSkills = resumeText.includes("SKILLS");
+    const hasEducation = resumeText.includes("EDUCATION");
+    const existingWarning = suggestions.querySelector(".resume-warning");
+
+    if (!hasExperience || !hasSkills || !hasEducation) {
+        if (!existingWarning) {
+            const missPara = document.createElement("p");
+            missPara.className = "resume-warning";
+            missPara.innerText = "Please add mandatory fields like EXPERIENCE, EDUCATION & SKILLS in your resume.";
+            suggestions.appendChild(missPara);
+        }
+    } else if (existingWarning) {
+        existingWarning.remove();
     }
 })
 
@@ -43,6 +54,7 @@ genBtn.addEventListener("click", async () => {
         });
 
         const data = await response.json();
+        if (!response.ok || data.error) throw new Error(data.error || `Request failed (${response.status})`);
         const feedback = data.choices[0].message.content;
         aiPara.innerHTML = feedback
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
@@ -75,6 +87,7 @@ scoreBtn.addEventListener("click", async () => {
         });
 
 const data = await response.json();
+if (!response.ok || data.error) throw new Error(data.error || `Request failed (${response.status})`);
 const feedback = data.choices[0].message.content;
 
 const scoreMatch = feedback.match(/SCORE:\s*(\d+)\/100/);
@@ -159,7 +172,7 @@ submitBtn.addEventListener("click", async () => {
     const { error } = await response.json();
          
         if(error){
-            console.log("Error saving: ", error.message)
+            console.log("Error saving: ", error)
         } else{
             console.log("saved successfully")
         }
